@@ -1,0 +1,33 @@
+run:
+  timeout: 5m
+  go: "1.25"
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+
+  linters:
+    enable:
+      - gofmt
+      - govet
+      - errcheck
+      - staticcheck
+      - gosimple
+      - ineffassign
+      - unused
+      - misspell
+      - gosec
+
+linters-settings:
+  goimports:
+    local-prefixes: github.com/matheusflausino/setup-devops-cli
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - errcheck
+    - linters:
+        - misspell
+      text: "comando|operacional|argumentos|progresso"
