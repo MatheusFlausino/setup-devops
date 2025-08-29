@@ -16,6 +16,7 @@ Script bash para automatizar a instalação de ferramentas essenciais para desen
 - **watch** - Monitoramento de comandos
 - **Helm** - Gerenciador de pacotes para Kubernetes
 - **Helmfile** - Gerenciamento declarativo de releases Helm
+- **K9s** - Interface TUI para gerenciamento de Kubernetes
 
 ## 🖥️ Sistemas Operacionais Suportados
 

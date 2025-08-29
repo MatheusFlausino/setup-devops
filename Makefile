@@ -95,6 +95,7 @@ cloud-devops: check
 	$(SCRIPT) install watch
 	$(SCRIPT) install helm
 	$(SCRIPT) install helmfile
+	$(SCRIPT) install k9s
 
 # Mostrar status das ferramentas
 status:
@@ -108,6 +109,7 @@ status:
 	@echo "Helm: $$(command -v helm >/dev/null 2>&1 && echo '✅ Instalado' || echo '❌ Não instalado')"
 	@echo "Helmfile: $$(command -v helmfile >/dev/null 2>&1 && echo '✅ Instalado' || echo '❌ Não instalado')"
 	@echo "net-tools: $$(command -v netstat >/dev/null 2>&1 && echo '✅ Instalado' || echo '❌ Não instalado')"
+	@echo "K9s: $$(command -v k9s >/dev/null 2>&1 && echo '✅ Instalado' || echo '❌ Não instalado')"
 
 # Atualizar scripts
 update:

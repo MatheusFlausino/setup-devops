@@ -17,7 +17,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG_FILE="$SCRIPT_DIR/test-results.log"
 
 # Lista de ferramentas para testar
-TOOLS=("docker" "git" "terraform" "aws" "kubectl" "watch" "helm" "helmfile" "net-tools")
+TOOLS=("docker" "git" "terraform" "aws" "kubectl" "watch" "helm" "helmfile" "net-tools" "k9s")
 
 log() {
     echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')]${NC} $1" | tee -a "$LOG_FILE"
@@ -212,7 +212,7 @@ test_net_tools() {
 
     if check_tool "net-tools" "netstat"; then
         # Testar comando básico
-        if netstat --version &> /dev/null 2>&1 || netstat -h &> /dev/null 2>&1; then
+        if command -v netstat &> /dev/null; then
             success "netstat responde corretamente"
         else
             error "netstat não responde corretamente"
@@ -229,6 +229,28 @@ test_net_tools() {
             success "route disponível"
         else
             warning "route não disponível"
+        fi
+    fi
+}
+
+# Função para testar K9s
+test_k9s() {
+    log "Testando K9s..."
+
+    if check_tool "K9s" "k9s"; then
+        # Testar comando básico
+        if k9s version &> /dev/null; then
+            success "K9s responde corretamente"
+        else
+            error "K9s não responde corretamente"
+        fi
+
+        # Verificar se há contexto kubectl configurado
+        if kubectl config current-context &> /dev/null 2>&1; then
+            success "K9s pode usar contexto kubectl configurado"
+        else
+            warning "K9s não tem contexto kubectl configurado"
+            info "Configure um cluster Kubernetes ou execute: kubectl config set-cluster"
         fi
     fi
 }
@@ -342,6 +364,7 @@ main() {
     test_helm
     test_helmfile
     test_net_tools
+    test_k9s
 
     # Gerar relatório final
     generate_report

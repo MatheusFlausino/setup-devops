@@ -21,7 +21,7 @@ INTERACTIVE=true
 
 # Lista de ferramentas
 ESSENTIAL_TOOLS=("docker" "git" "net-tools")
-CLOUD_DEVOPS_TOOLS=("terraform" "aws-cli" "kubectl" "watch" "helm" "helmfile")
+CLOUD_DEVOPS_TOOLS=("terraform" "aws-cli" "kubectl" "watch" "helm" "helmfile" "k9s")
 ALL_TOOLS=("${ESSENTIAL_TOOLS[@]}" "${CLOUD_DEVOPS_TOOLS[@]}")
 
 # Função para logging
@@ -91,6 +91,9 @@ is_installed() {
         "net-tools")
             command -v netstat &> /dev/null || command -v ifconfig &> /dev/null || command -v route &> /dev/null
             ;;
+        "k9s")
+            command -v k9s &> /dev/null
+            ;;
         *)
             return 1
             ;;
@@ -130,6 +133,9 @@ load_installers() {
     fi
     if [[ -f "$installer_dir/net-tools.sh" ]]; then
         source "$installer_dir/net-tools.sh"
+    fi
+    if [[ -f "$installer_dir/k9s.sh" ]]; then
+        source "$installer_dir/k9s.sh"
     fi
 }
 
@@ -214,6 +220,14 @@ install_tool() {
                 install_net_tools_standalone "$os"
             else
                 error "Instalador do net-tools não encontrado. Verifique se config/installers/net-tools.sh existe."
+                return 1
+            fi
+            ;;
+        "k9s")
+            if command -v install_k9s_standalone &> /dev/null; then
+                install_k9s_standalone "$os"
+            else
+                error "Instalador do K9s não encontrado. Verifique se config/installers/k9s.sh existe."
                 return 1
             fi
             ;;
