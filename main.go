@@ -9,13 +9,12 @@ import (
 
 var (
 	version = "dev"
-	commit  = "unknown"
 	date    = "unknown"
 )
 
 func main() {
 	// Configurar informações de versão
-	cmd.SetVersionInfo(version, commit, date)
+	cmd.SetVersionInfo(version, date)
 
 	// Executar a CLI
 	if err := cmd.Execute(); err != nil {

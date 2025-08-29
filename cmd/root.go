@@ -12,7 +12,6 @@ import (
 var (
 	cfgFile string
 	version string
-	commit  string
 	date    string
 )
 
@@ -30,9 +29,16 @@ Ferramentas suportadas:
 Sistemas suportados: Ubuntu 20.04+, CentOS/RHEL 8+, macOS 12+`,
 	Version: version,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("Setup DevOps CLI v%s\n", version)
-		fmt.Printf("Commit: %s\n", commit)
-		fmt.Printf("Build Date: %s\n", date)
+		// Se o flag --version foi usado, mostrar informações de versão
+		if cmd.Flag("version").Changed {
+			showVersionInfo()
+			return
+		}
+
+		// Se não há argumentos, mostrar ajuda
+		if len(args) == 0 {
+			cmd.Help()
+		}
 	},
 }
 
@@ -42,9 +48,8 @@ func Execute() error {
 }
 
 // SetVersionInfo configura as informações de versão
-func SetVersionInfo(v, c, d string) {
+func SetVersionInfo(v, d string) {
 	version = v
-	commit = c
 	date = d
 }
 
@@ -55,6 +60,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.setup-devops.yaml)")
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "verbose output")
 	rootCmd.PersistentFlags().BoolP("yes", "y", false, "skip confirmation prompts")
+	rootCmd.PersistentFlags().Bool("version", false, "show version information")
 
 	// Bind flags to viper
 	viper.BindPFlag("verbose", rootCmd.PersistentFlags().Lookup("verbose"))
@@ -62,6 +68,12 @@ func init() {
 
 	// Configurar cores
 	color.NoColor = false
+}
+
+// showVersionInfo mostra informações detalhadas de versão
+func showVersionInfo() {
+	fmt.Printf("Setup DevOps CLI v%s\n", version)
+	fmt.Printf("Build Date: %s\n", date)
 }
 
 // initConfig reads in config file and ENV variables if set.

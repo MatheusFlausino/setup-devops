@@ -6,9 +6,8 @@
 # Variáveis
 BINARY_NAME = setup-devops
 VERSION ?= $(shell git describe --tags --always --dirty)
-COMMIT = $(shell git rev-parse --short HEAD)
 DATE = $(shell date -u '+%Y-%m-%d_%H:%M:%S')
-LDFLAGS = -ldflags "-X main.version=$(VERSION) -X main.commit=$(COMMIT) -X main.date=$(DATE)"
+LDFLAGS = -ldflags "-X main.version=$(VERSION) -X main.date=$(DATE)"
 
 # Plataformas para build
 PLATFORMS = linux-amd64 darwin-amd64 darwin-arm64
@@ -122,7 +121,6 @@ install-tools:
 # Verificar versão
 version:
 	@echo "📦 Versão atual: $(VERSION)"
-	@echo "📝 Commit: $(COMMIT)"
 	@echo "📅 Data: $(DATE)"
 
 # Executar CLI local
