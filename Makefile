@@ -1,119 +1,138 @@
-# Makefile para Setup DevOps Tools
-# Facilita o uso do script de onboarding
+# Makefile para Setup DevOps CLI
+# Facilita o build, teste e release da CLI
 
-.PHONY: help setup setup-auto install test clean
+.PHONY: help build build-all clean test install uninstall release
 
 # Variáveis
-SCRIPT = ./setup-devops.sh
-TEST_SCRIPT = ./test-setup.sh
+BINARY_NAME = setup-devops
+VERSION ?= $(shell git describe --tags --always --dirty)
+COMMIT = $(shell git rev-parse --short HEAD)
+DATE = $(shell date -u '+%Y-%m-%d_%H:%M:%S')
+LDFLAGS = -ldflags "-X main.version=$(VERSION) -X main.commit=$(COMMIT) -X main.date=$(DATE)"
+
+# Plataformas para build
+PLATFORMS = linux-amd64 darwin-amd64 darwin-arm64
 
 # Comando padrão
 help:
-	@echo "Setup DevOps Tools - Comandos disponíveis:"
+	@echo "Setup DevOps CLI - Comandos disponíveis:"
 	@echo ""
-	@echo "  make setup        - Setup interativo (menu para escolher ferramentas)"
-	@echo "  make setup-auto   - Setup automático (instala todas as ferramentas)"
-	@echo "  make install      - Instalação individual (especifique a ferramenta)"
-	@echo "  make test         - Testa se as ferramentas foram instaladas corretamente"
-	@echo "  make clean        - Remove arquivos de log"
+	@echo "  make build        - Build para a plataforma atual"
+	@echo "  make build-all    - Build para todas as plataformas"
+	@echo "  make test         - Executar testes"
+	@echo "  make clean        - Limpar arquivos de build"
+	@echo "  make install      - Instalar CLI localmente"
+	@echo "  make uninstall    - Desinstalar CLI"
+	@echo "  make release      - Preparar release"
 	@echo "  make help         - Mostra esta ajuda"
 	@echo ""
-	@echo "Exemplos:"
-	@echo "  make install TOOL=docker"
-	@echo "  make install TOOL=terraform"
-	@echo ""
 
-# Setup interativo
-setup:
-	@echo "Iniciando setup interativo..."
-	$(SCRIPT) setup
+# Build para a plataforma atual
+build:
+	@echo "🔨 Buildando $(BINARY_NAME) v$(VERSION)..."
+	go build $(LDFLAGS) -o bin/$(BINARY_NAME) .
 
-# Setup automático
-setup-auto:
-	@echo "Iniciando setup automático..."
-	$(SCRIPT) setup -y
+# Build para todas as plataformas
+build-all:
+	@echo "🔨 Buildando $(BINARY_NAME) v$(VERSION) para todas as plataformas..."
+	@mkdir -p bin
+	@for platform in $(PLATFORMS); do \
+		os=$${platform%-*}; \
+		arch=$${platform#*-}; \
+		echo "Buildando para $$os/$$arch..."; \
+		GOOS=$$os GOARCH=$$arch go build $(LDFLAGS) -o bin/$(BINARY_NAME)-$$platform .; \
+	done
+	@echo "✅ Build concluído!"
 
-# Instalação individual
-install:
-	@if [ -z "$(TOOL)" ]; then \
-		echo "Erro: Especifique a ferramenta com TOOL=<nome>"; \
-		echo "Exemplo: make install TOOL=docker"; \
-		exit 1; \
-	fi
-	@echo "Instalando $(TOOL)..."
-	$(SCRIPT) install $(TOOL)
-
-# Instalação individual automática
-install-auto:
-	@if [ -z "$(TOOL)" ]; then \
-		echo "Erro: Especifique a ferramenta com TOOL=<nome>"; \
-		echo "Exemplo: make install-auto TOOL=docker"; \
-		exit 1; \
-	fi
-	@echo "Instalando $(TOOL) automaticamente..."
-	$(SCRIPT) install $(TOOL) -y
-
-# Teste das ferramentas
+# Testes
 test:
-	@echo "Testando instalação das ferramentas..."
-	$(TEST_SCRIPT)
+	@echo "🧪 Executando testes..."
+	go test -v ./...
 
-# Limpeza de logs
+# Limpeza
 clean:
-	@echo "Removendo arquivos de log..."
-	@rm -f setup.log test-results.log
-	@echo "Logs removidos!"
+	@echo "🧹 Limpando arquivos de build..."
+	@rm -rf bin/
+	@go clean
+	@echo "✅ Limpeza concluída!"
 
-# Verificar se o script é executável
-check:
-	@if [ ! -x "$(SCRIPT)" ]; then \
-		echo "Tornando script executável..."; \
-		chmod +x $(SCRIPT); \
+# Instalação local
+install: build
+	@echo "📦 Instalando CLI localmente..."
+	@cp bin/$(BINARY_NAME) /usr/local/bin/
+	@chmod +x /usr/local/bin/$(BINARY_NAME)
+	@echo "✅ CLI instalada em /usr/local/bin/$(BINARY_NAME)"
+
+# Desinstalação
+uninstall:
+	@echo "🗑️  Desinstalando CLI..."
+	@rm -f /usr/local/bin/$(BINARY_NAME)
+	@echo "✅ CLI desinstalada"
+
+# Preparar release
+release: build-all
+	@echo "🚀 Preparando release v$(VERSION)..."
+	@echo "Binários criados em bin/:"
+	@ls -la bin/
+	@echo ""
+	@echo "Para criar um release no GitHub:"
+	@echo "1. git tag v$(VERSION)"
+	@echo "2. git push origin v$(VERSION)"
+	@echo "3. Criar release no GitHub com os binários da pasta bin/"
+
+# Desenvolvimento
+dev: build
+	@echo "🚀 Executando CLI em modo desenvolvimento..."
+	./bin/$(BINARY_NAME) --help
+
+# Verificar dependências
+deps:
+	@echo "📦 Verificando dependências..."
+	go mod tidy
+	go mod verify
+
+# Lint
+lint:
+	@echo "🔍 Executando lint..."
+	golangci-lint run
+
+# Formatar código
+fmt:
+	@echo "🎨 Formatando código..."
+	go fmt ./...
+	goimports -w .
+
+# Verificar se há mudanças não commitadas
+check-dirty:
+	@if [ -n "$(shell git status --porcelain)" ]; then \
+		echo "❌ Há mudanças não commitadas. Faça commit antes de fazer release."; \
+		exit 1; \
 	fi
-	@if [ ! -x "$(TEST_SCRIPT)" ]; then \
-		echo "Tornando script de teste executável..."; \
-		chmod +x $(TEST_SCRIPT); \
-	fi
-	@echo "Scripts verificados!"
 
-# Instalação completa (setup + teste)
-all: check setup-auto test
+# Build para release (com verificação de mudanças)
+release-build: check-dirty build-all
+	@echo "✅ Build para release concluído!"
 
-# Instalação das ferramentas essenciais
-essentials: check
-	@echo "Instalando ferramentas essenciais..."
-	$(SCRIPT) install docker
-	$(SCRIPT) install git
-	$(SCRIPT) install net-tools
+# Instalar ferramentas de desenvolvimento
+install-tools:
+	@echo "🔧 Instalando ferramentas de desenvolvimento..."
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	go install golang.org/x/tools/cmd/goimports@latest
 
-# Instalação das ferramentas Cloud & DevOps
-cloud-devops: check
-	@echo "Instalando ferramentas Cloud & DevOps..."
-	$(SCRIPT) install terraform
-	$(SCRIPT) install aws-cli
-	$(SCRIPT) install kubectl
-	$(SCRIPT) install watch
-	$(SCRIPT) install helm
-	$(SCRIPT) install helmfile
-	$(SCRIPT) install k9s
+# Verificar versão
+version:
+	@echo "📦 Versão atual: $(VERSION)"
+	@echo "📝 Commit: $(COMMIT)"
+	@echo "📅 Data: $(DATE)"
 
-# Mostrar status das ferramentas
-status:
-	@echo "Verificando status das ferramentas..."
-	@echo "Docker: $$(command -v docker >/dev/null 2>&1 && echo '✅ Instalado' || echo '❌ Não instalado')"
-	@echo "Git: $$(command -v git >/dev/null 2>&1 && echo '✅ Instalado' || echo '❌ Não instalado')"
-	@echo "Terraform: $$(command -v terraform >/dev/null 2>&1 && echo '✅ Instalado' || echo '❌ Não instalado')"
-	@echo "AWS CLI: $$(command -v aws >/dev/null 2>&1 && echo '✅ Instalado' || echo '❌ Não instalado')"
-	@echo "kubectl: $$(command -v kubectl >/dev/null 2>&1 && echo '✅ Instalado' || echo '❌ Não instalado')"
-	@echo "watch: $$(command -v watch >/dev/null 2>&1 && echo '✅ Instalado' || echo '❌ Não instalado')"
-	@echo "Helm: $$(command -v helm >/dev/null 2>&1 && echo '✅ Instalado' || echo '❌ Não instalado')"
-	@echo "Helmfile: $$(command -v helmfile >/dev/null 2>&1 && echo '✅ Instalado' || echo '❌ Não instalado')"
-	@echo "net-tools: $$(command -v netstat >/dev/null 2>&1 && echo '✅ Instalado' || echo '❌ Não instalado')"
-	@echo "K9s: $$(command -v k9s >/dev/null 2>&1 && echo '✅ Instalado' || echo '❌ Não instalado')"
+# Executar CLI local
+run: build
+	@./bin/$(BINARY_NAME) $(ARGS)
 
-# Atualizar scripts
-update:
-	@echo "Atualizando scripts..."
-	@git pull origin main 2>/dev/null || echo "Não é um repositório git ou não há atualizações"
-	@chmod +x $(SCRIPT) $(TEST_SCRIPT)
-	@echo "Scripts atualizados!"
+# Testar CLI
+test-cli: build
+	@echo "🧪 Testando CLI..."
+	@./bin/$(BINARY_NAME) version
+	@./bin/$(BINARY_NAME) --help
+	@./bin/$(BINARY_NAME) status
+	@echo "✅ Testes da CLI concluídos!"

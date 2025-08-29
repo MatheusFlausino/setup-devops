@@ -1,8 +1,17 @@
-# Setup DevOps Tools - Script de Onboarding
+# Setup DevOps CLI
 
-Script bash para automatizar a instalação de ferramentas essenciais para desenvolvedores DevOps durante o processo de onboarding.
+Uma CLI moderna e intuitiva para automatizar a instalação de ferramentas essenciais para desenvolvedores DevOps durante o processo de onboarding.
 
-## 🚀 Ferramentas Suportadas
+## 🚀 Características
+
+- **CLI Moderna**: Interface de linha de comando intuitiva e colorida
+- **Instalação Simples**: Instale via release do GitHub com um comando
+- **Multiplataforma**: Suporte para Linux (Ubuntu/CentOS) e macOS
+- **Atualizações Automáticas**: Sistema de atualização integrado
+- **Interface Interativa**: Menus interativos para facilitar o uso
+- **Instalação Seletiva**: Instale apenas as ferramentas que você precisa
+
+## 🛠️ Ferramentas Suportadas
 
 ### Essenciais
 - **Docker** - Plataforma de containerização
@@ -24,111 +33,158 @@ Script bash para automatizar a instalação de ferramentas essenciais para desen
 - **CentOS/RHEL 8+** - com yum/dnf + repositórios oficiais
 - **macOS 12+** - com Homebrew + instaladores oficiais
 
+## 📦 Instalação
+
+### Instalação Rápida
+
+```bash
+# Instalar via script de instalação
+curl -sSL https://raw.githubusercontent.com/matheusflausino/setup-devops-cli/main/install.sh | bash
+```
+
+### Instalação Manual
+
+```bash
+# 1. Baixar o binário para sua plataforma
+# Linux AMD64
+curl -L -o setup-devops https://github.com/matheusflausino/setup-devops-cli/releases/latest/download/setup-devops-linux-amd64
+
+# macOS AMD64
+curl -L -o setup-devops https://github.com/matheusflausino/setup-devops-cli/releases/latest/download/setup-devops-darwin-amd64
+
+# macOS ARM64 (Apple Silicon)
+curl -L -o setup-devops https://github.com/matheusflausino/setup-devops-cli/releases/latest/download/setup-devops-darwin-arm64
+
+# 2. Tornar executável
+chmod +x setup-devops
+
+# 3. Mover para PATH
+sudo mv setup-devops /usr/local/bin/
+```
+
+## 🚀 Como Usar
+
+### Comandos Principais
+
+```bash
+# Ver ajuda
+setup-devops --help
+
+# Setup interativo (recomendado)
+setup-devops setup
+
+# Setup automático (todas as ferramentas)
+setup-devops setup --yes
+
+# Setup específico
+setup-devops setup --type essentials    # Apenas ferramentas essenciais
+setup-devops setup --type cloud-devops  # Apenas ferramentas Cloud & DevOps
+setup-devops setup --type all           # Todas as ferramentas
+
+# Instalar ferramenta específica
+setup-devops install docker
+setup-devops install terraform --yes
+
+# Verificar status das ferramentas
+setup-devops status
+
+# Atualizar a CLI
+setup-devops update
+```
+
+### Exemplos de Uso
+
+#### Onboarding completo para novo desenvolvedor
+```bash
+# Instalar CLI
+curl -sSL https://raw.githubusercontent.com/matheusflausino/setup-devops-cli/main/install.sh | bash
+
+# Setup completo automático
+setup-devops setup --yes
+```
+
+#### Instalação seletiva
+```bash
+# Setup interativo (escolher ferramentas)
+setup-devops setup
+
+# Apenas Docker
+setup-devops install docker
+
+# Apenas Terraform sem confirmação
+setup-devops install terraform --yes
+```
+
+#### Verificar o que está instalado
+```bash
+# Ver status de todas as ferramentas
+setup-devops status
+```
+
 ## 📋 Pré-requisitos
 
 ### Para macOS
-- [Homebrew](https://brew.sh) instalado (o script verificará automaticamente)
+- [Homebrew](https://brew.sh) instalado (a CLI verificará automaticamente)
 
 ### Para todos os sistemas
 - Acesso sudo (para instalação de pacotes)
 - Conexão com internet
 - curl (geralmente já instalado)
 
-## 🛠️ Como Usar
+## 🔧 Desenvolvimento
 
-### 1. Tornar o script executável
-```bash
-chmod +x setup-devops.sh
-```
+### Pré-requisitos para Desenvolvimento
+- Go 1.21+
+- Make
 
-### 2. Comandos disponíveis
+### Build Local
 
-#### Setup Interativo
-```bash
-./setup-devops.sh setup
-```
-- Menu interativo para escolher quais ferramentas instalar
-- Opções: ferramentas essenciais, cloud & DevOps, todas as ferramentas, ou ferramenta específica
-
-#### Setup Automático
-```bash
-./setup-devops.sh setup -y
-```
-- Instala todas as ferramentas automaticamente sem perguntas
-
-#### Instalação Individual
-```bash
-./setup-devops.sh install [FERRAMENTA]
-```
-- Instala uma ferramenta específica
-- Exemplo: `./setup-devops.sh install docker`
-
-#### Instalação Individual Automática
-```bash
-./setup-devops.sh install [FERRAMENTA] -y
-```
-- Instala uma ferramenta específica sem confirmação
-- Exemplo: `./setup-devops.sh install terraform -y`
-
-#### Ajuda
-```bash
-./setup-devops.sh help
-```
-
-## 📝 Exemplos de Uso
-
-### Onboarding completo para novo desenvolvedor
 ```bash
 # Clone o repositório
-git clone <repository-url>
-cd setup-devops
+git clone https://github.com/matheusflausino/setup-devops-cli.git
+cd setup-devops-cli
 
-# Execute o setup completo
-./setup-devops.sh setup -y
+# Instalar dependências
+go mod tidy
+
+# Build para plataforma atual
+make build
+
+# Build para todas as plataformas
+make build-all
+
+# Instalar localmente
+make install
+
+# Executar testes
+make test
 ```
 
-### Instalação seletiva
+### Comandos de Desenvolvimento
+
 ```bash
-# Apenas ferramentas essenciais
-./setup-devops.sh setup
-# Escolha opção 1 no menu
+# Ver todos os comandos disponíveis
+make help
 
-# Apenas Docker
-./setup-devops.sh install docker
+# Build e executar
+make dev
 
-# Apenas Terraform
-./setup-devops.sh install terraform -y
+# Formatar código
+make fmt
+
+# Executar lint
+make lint
+
+# Testar CLI
+make test-cli
+
+# Preparar release
+make release
 ```
-
-## 🔧 Detalhes Técnicos
-
-### Arquitetura Modular
-O script utiliza uma arquitetura modular com instaladores específicos:
-- **Script principal** (`setup-devops.sh`) - Orquestra a instalação
-- **Instaladores específicos** (`config/installers/`) - Cada ferramenta tem seu próprio instalador
-- **Configurações** (`config/versions.conf`) - Versões e configurações centralizadas
-
-### Detecção Automática de Sistema
-O script detecta automaticamente:
-- Ubuntu (apt-get disponível)
-- CentOS/RHEL (yum/dnf disponível)
-- macOS (darwin)
-
-### Verificação de Instalação
-O script verifica se cada ferramenta já está instalada antes de tentar instalá-la novamente.
-
-### Logs
-Todas as operações são registradas em `setup.log` no diretório do script.
-
-### Tratamento de Erros
-- Verificação de sistema operacional suportado
-- Verificação de pré-requisitos (Homebrew no macOS)
-- Tratamento de erros de instalação
-- Logs detalhados de erros
 
 ## 🔒 Segurança
 
-- O script não deve ser executado como root
+- A CLI não deve ser executada como root
 - Usa repositórios oficiais quando possível
 - Downloads de fontes confiáveis (HashiCorp, AWS, Kubernetes)
 - Verificação de integridade quando disponível
@@ -142,16 +198,16 @@ Todas as operações são registradas em `setup.log` no diretório do script.
 ```
 
 ### Erro: "Sistema Linux não suportado"
-- O script suporta apenas Ubuntu e CentOS/RHEL
-- Para outras distribuições, considere adaptar o script
+- A CLI suporta apenas Ubuntu e CentOS/RHEL
+- Para outras distribuições, considere adaptar o código
 
 ### Erro de permissão
 ```bash
-# Verifique se o script é executável
-ls -la setup-devops.sh
+# Verifique se a CLI é executável
+ls -la $(which setup-devops)
 
 # Torne executável se necessário
-chmod +x setup-devops.sh
+chmod +x $(which setup-devops)
 ```
 
 ### Docker não funciona após instalação
@@ -174,3 +230,18 @@ Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes
 3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
 4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
+
+## 📝 Changelog
+
+### v1.0.0
+- CLI moderna em Go
+- Interface interativa
+- Suporte multiplataforma
+- Sistema de atualização
+- Comandos intuitivos
+
+## 🔗 Links Úteis
+
+- [Releases](https://github.com/matheusflausino/setup-devops-cli/releases)
+- [Issues](https://github.com/matheusflausino/setup-devops-cli/issues)
+- [Discussions](https://github.com/matheusflausino/setup-devops-cli/discussions)
