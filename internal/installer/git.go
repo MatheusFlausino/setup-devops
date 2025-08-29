@@ -33,12 +33,12 @@ func installGitUbuntu() error {
 	color.Blue("📦 Instalando Git no Ubuntu...")
 
 	// Atualizar repositórios
-	if err := runCommand("sudo", "apt-get", "update"); err != nil {
+	if err := utils.RunCommand("sudo", "apt-get", "update"); err != nil {
 		return fmt.Errorf("erro ao atualizar repositórios: %w", err)
 	}
 
 	// Instalar Git
-	if err := runCommand("sudo", "apt-get", "install", "-y", "git"); err != nil {
+	if err := utils.RunCommand("sudo", "apt-get", "install", "-y", "git"); err != nil {
 		return fmt.Errorf("erro ao instalar Git: %w", err)
 	}
 
@@ -51,7 +51,7 @@ func installGitCentOS() error {
 	color.Blue("📦 Instalando Git no CentOS/RHEL...")
 
 	// Instalar Git
-	if err := runCommand("sudo", "yum", "install", "-y", "git"); err != nil {
+	if err := utils.RunCommand("sudo", "yum", "install", "-y", "git"); err != nil {
 		return fmt.Errorf("erro ao instalar Git: %w", err)
 	}
 
@@ -69,7 +69,7 @@ func installGitMacOS() error {
 	}
 
 	// Instalar Git via Homebrew
-	if err := runCommand("brew", "install", "git"); err != nil {
+	if err := utils.RunCommand("brew", "install", "git"); err != nil {
 		return fmt.Errorf("erro ao instalar Git: %w", err)
 	}
 

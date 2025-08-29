@@ -2,7 +2,6 @@ package installer
 
 import (
 	"fmt"
-	"os/exec"
 
 	"github.com/fatih/color"
 	"github.com/matheusflausino/setup-devops-cli/internal/utils"
@@ -34,23 +33,22 @@ func installTerraformUbuntu() error {
 	color.Blue("📦 Instalando Terraform no Ubuntu...")
 
 	// Adicionar chave GPG do HashiCorp
-	if err := runCommand("wget", "-O-", "https://apt.releases.hashicorp.com/gpg", "|", "sudo", "gpg", "--dearmor", "-o", "/usr/share/keyrings/hashicorp-archive-keyring.gpg"); err != nil {
+	if err := utils.RunCommand("wget", "-O-", "https://apt.releases.hashicorp.com/gpg", "|", "sudo", "gpg", "--dearmor", "-o", "/usr/share/keyrings/hashicorp-archive-keyring.gpg"); err != nil {
 		return fmt.Errorf("erro ao adicionar chave GPG do HashiCorp: %w", err)
 	}
 
 	// Adicionar repositório do HashiCorp
-	repoCmd := exec.Command("bash", "-c", `echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list`)
-	if err := repoCmd.Run(); err != nil {
+	if err := utils.RunCommand("bash", "-c", `echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list`); err != nil {
 		return fmt.Errorf("erro ao adicionar repositório do HashiCorp: %w", err)
 	}
 
 	// Atualizar repositórios
-	if err := runCommand("sudo", "apt-get", "update"); err != nil {
+	if err := utils.RunCommand("sudo", "apt-get", "update"); err != nil {
 		return fmt.Errorf("erro ao atualizar repositórios: %w", err)
 	}
 
 	// Instalar Terraform
-	if err := runCommand("sudo", "apt-get", "install", "-y", "terraform"); err != nil {
+	if err := utils.RunCommand("sudo", "apt-get", "install", "-y", "terraform"); err != nil {
 		return fmt.Errorf("erro ao instalar Terraform: %w", err)
 	}
 
@@ -63,12 +61,12 @@ func installTerraformCentOS() error {
 	color.Blue("📦 Instalando Terraform no CentOS/RHEL...")
 
 	// Adicionar repositório do HashiCorp
-	if err := runCommand("sudo", "yum-config-manager", "--add-repo", "https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo"); err != nil {
+	if err := utils.RunCommand("sudo", "yum-config-manager", "--add-repo", "https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo"); err != nil {
 		return fmt.Errorf("erro ao adicionar repositório do HashiCorp: %w", err)
 	}
 
 	// Instalar Terraform
-	if err := runCommand("sudo", "yum", "-y", "install", "terraform"); err != nil {
+	if err := utils.RunCommand("sudo", "yum", "-y", "install", "terraform"); err != nil {
 		return fmt.Errorf("erro ao instalar Terraform: %w", err)
 	}
 
@@ -86,7 +84,7 @@ func installTerraformMacOS() error {
 	}
 
 	// Instalar Terraform via Homebrew
-	if err := runCommand("brew", "install", "terraform"); err != nil {
+	if err := utils.RunCommand("brew", "install", "terraform"); err != nil {
 		return fmt.Errorf("erro ao instalar Terraform: %w", err)
 	}
 

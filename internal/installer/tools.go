@@ -32,17 +32,17 @@ func installKubectlUbuntu() error {
 	color.Blue("📦 Instalando kubectl no Ubuntu...")
 
 	// Baixar kubectl
-	if err := runCommand("curl", "-LO", "https://dl.k8s.io/release/v1.28.0/bin/linux/amd64/kubectl"); err != nil {
+	if err := utils.RunCommand("curl", "-LO", "https://dl.k8s.io/release/v1.28.0/bin/linux/amd64/kubectl"); err != nil {
 		return fmt.Errorf("erro ao baixar kubectl: %w", err)
 	}
 
 	// Tornar executável
-	if err := runCommand("chmod", "+x", "kubectl"); err != nil {
+	if err := utils.RunCommand("chmod", "+x", "kubectl"); err != nil {
 		return fmt.Errorf("erro ao tornar kubectl executável: %w", err)
 	}
 
 	// Mover para PATH
-	if err := runCommand("sudo", "mv", "kubectl", "/usr/local/bin/"); err != nil {
+	if err := utils.RunCommand("sudo", "mv", "kubectl", "/usr/local/bin/"); err != nil {
 		return fmt.Errorf("erro ao instalar kubectl: %w", err)
 	}
 
@@ -54,17 +54,17 @@ func installKubectlCentOS() error {
 	color.Blue("📦 Instalando kubectl no CentOS/RHEL...")
 
 	// Baixar kubectl
-	if err := runCommand("curl", "-LO", "https://dl.k8s.io/release/v1.28.0/bin/linux/amd64/kubectl"); err != nil {
+	if err := utils.RunCommand("curl", "-LO", "https://dl.k8s.io/release/v1.28.0/bin/linux/amd64/kubectl"); err != nil {
 		return fmt.Errorf("erro ao baixar kubectl: %w", err)
 	}
 
 	// Tornar executável
-	if err := runCommand("chmod", "+x", "kubectl"); err != nil {
+	if err := utils.RunCommand("chmod", "+x", "kubectl"); err != nil {
 		return fmt.Errorf("erro ao tornar kubectl executável: %w", err)
 	}
 
 	// Mover para PATH
-	if err := runCommand("sudo", "mv", "kubectl", "/usr/local/bin/"); err != nil {
+	if err := utils.RunCommand("sudo", "mv", "kubectl", "/usr/local/bin/"); err != nil {
 		return fmt.Errorf("erro ao instalar kubectl: %w", err)
 	}
 
@@ -79,7 +79,7 @@ func installKubectlMacOS() error {
 		return fmt.Errorf("Homebrew não está instalado. Instale primeiro: https://brew.sh")
 	}
 
-	if err := runCommand("brew", "install", "kubectl"); err != nil {
+	if err := utils.RunCommand("brew", "install", "kubectl"); err != nil {
 		return fmt.Errorf("erro ao instalar kubectl: %w", err)
 	}
 
@@ -111,11 +111,11 @@ func installWatch(osType utils.OSType) error {
 func installWatchUbuntu() error {
 	color.Blue("📦 Instalando watch no Ubuntu...")
 
-	if err := runCommand("sudo", "apt-get", "update"); err != nil {
+	if err := utils.RunCommand("sudo", "apt-get", "update"); err != nil {
 		return fmt.Errorf("erro ao atualizar repositórios: %w", err)
 	}
 
-	if err := runCommand("sudo", "apt-get", "install", "-y", "procps"); err != nil {
+	if err := utils.RunCommand("sudo", "apt-get", "install", "-y", "procps"); err != nil {
 		return fmt.Errorf("erro ao instalar watch: %w", err)
 	}
 
@@ -126,7 +126,7 @@ func installWatchUbuntu() error {
 func installWatchCentOS() error {
 	color.Blue("📦 Instalando watch no CentOS/RHEL...")
 
-	if err := runCommand("sudo", "yum", "install", "-y", "procps-ng"); err != nil {
+	if err := utils.RunCommand("sudo", "yum", "install", "-y", "procps-ng"); err != nil {
 		return fmt.Errorf("erro ao instalar watch: %w", err)
 	}
 
@@ -141,7 +141,7 @@ func installWatchMacOS() error {
 		return fmt.Errorf("Homebrew não está instalado. Instale primeiro: https://brew.sh")
 	}
 
-	if err := runCommand("brew", "install", "watch"); err != nil {
+	if err := utils.RunCommand("brew", "install", "watch"); err != nil {
 		return fmt.Errorf("erro ao instalar watch: %w", err)
 	}
 
@@ -174,22 +174,22 @@ func installHelmUbuntu() error {
 	color.Blue("📦 Instalando Helm no Ubuntu...")
 
 	// Baixar Helm
-	if err := runCommand("curl", "https://get.helm.sh/helm-v3.12.0-linux-amd64.tar.gz", "-o", "helm.tar.gz"); err != nil {
+	if err := utils.RunCommand("curl", "https://get.helm.sh/helm-v3.12.0-linux-amd64.tar.gz", "-o", "helm.tar.gz"); err != nil {
 		return fmt.Errorf("erro ao baixar Helm: %w", err)
 	}
 
 	// Extrair
-	if err := runCommand("tar", "-xzf", "helm.tar.gz"); err != nil {
+	if err := utils.RunCommand("tar", "-xzf", "helm.tar.gz"); err != nil {
 		return fmt.Errorf("erro ao extrair Helm: %w", err)
 	}
 
 	// Mover para PATH
-	if err := runCommand("sudo", "mv", "linux-amd64/helm", "/usr/local/bin/"); err != nil {
+	if err := utils.RunCommand("sudo", "mv", "linux-amd64/helm", "/usr/local/bin/"); err != nil {
 		return fmt.Errorf("erro ao instalar Helm: %w", err)
 	}
 
 	// Limpar
-	runCommand("rm", "-rf", "helm.tar.gz", "linux-amd64")
+	utils.RunCommandSilent("rm", "-rf", "helm.tar.gz", "linux-amd64")
 
 	color.Green("✅ Helm instalado com sucesso no Ubuntu!")
 	return nil
@@ -199,22 +199,22 @@ func installHelmCentOS() error {
 	color.Blue("📦 Instalando Helm no CentOS/RHEL...")
 
 	// Baixar Helm
-	if err := runCommand("curl", "https://get.helm.sh/helm-v3.12.0-linux-amd64.tar.gz", "-o", "helm.tar.gz"); err != nil {
+	if err := utils.RunCommand("curl", "https://get.helm.sh/helm-v3.12.0-linux-amd64.tar.gz", "-o", "helm.tar.gz"); err != nil {
 		return fmt.Errorf("erro ao baixar Helm: %w", err)
 	}
 
 	// Extrair
-	if err := runCommand("tar", "-xzf", "helm.tar.gz"); err != nil {
+	if err := utils.RunCommand("tar", "-xzf", "helm.tar.gz"); err != nil {
 		return fmt.Errorf("erro ao extrair Helm: %w", err)
 	}
 
 	// Mover para PATH
-	if err := runCommand("sudo", "mv", "linux-amd64/helm", "/usr/local/bin/"); err != nil {
+	if err := utils.RunCommand("sudo", "mv", "linux-amd64/helm", "/usr/local/bin/"); err != nil {
 		return fmt.Errorf("erro ao instalar Helm: %w", err)
 	}
 
 	// Limpar
-	runCommand("rm", "-rf", "helm.tar.gz", "linux-amd64")
+	utils.RunCommandSilent("rm", "-rf", "helm.tar.gz", "linux-amd64")
 
 	color.Green("✅ Helm instalado com sucesso no CentOS/RHEL!")
 	return nil
@@ -227,7 +227,7 @@ func installHelmMacOS() error {
 		return fmt.Errorf("Homebrew não está instalado. Instale primeiro: https://brew.sh")
 	}
 
-	if err := runCommand("brew", "install", "helm"); err != nil {
+	if err := utils.RunCommand("brew", "install", "helm"); err != nil {
 		return fmt.Errorf("erro ao instalar Helm: %w", err)
 	}
 
@@ -260,17 +260,17 @@ func installHelmfileUbuntu() error {
 	color.Blue("📦 Instalando Helmfile no Ubuntu...")
 
 	// Baixar Helmfile
-	if err := runCommand("curl", "-L", "https://github.com/helmfile/helmfile/releases/latest/download/helmfile_linux_amd64", "-o", "helmfile"); err != nil {
+	if err := utils.RunCommand("curl", "-L", "https://github.com/helmfile/helmfile/releases/latest/download/helmfile_linux_amd64", "-o", "helmfile"); err != nil {
 		return fmt.Errorf("erro ao baixar Helmfile: %w", err)
 	}
 
 	// Tornar executável
-	if err := runCommand("chmod", "+x", "helmfile"); err != nil {
+	if err := utils.RunCommand("chmod", "+x", "helmfile"); err != nil {
 		return fmt.Errorf("erro ao tornar Helmfile executável: %w", err)
 	}
 
 	// Mover para PATH
-	if err := runCommand("sudo", "mv", "helmfile", "/usr/local/bin/"); err != nil {
+	if err := utils.RunCommand("sudo", "mv", "helmfile", "/usr/local/bin/"); err != nil {
 		return fmt.Errorf("erro ao instalar Helmfile: %w", err)
 	}
 
@@ -282,17 +282,17 @@ func installHelmfileCentOS() error {
 	color.Blue("📦 Instalando Helmfile no CentOS/RHEL...")
 
 	// Baixar Helmfile
-	if err := runCommand("curl", "-L", "https://github.com/helmfile/helmfile/releases/latest/download/helmfile_linux_amd64", "-o", "helmfile"); err != nil {
+	if err := utils.RunCommand("curl", "-L", "https://github.com/helmfile/helmfile/releases/latest/download/helmfile_linux_amd64", "-o", "helmfile"); err != nil {
 		return fmt.Errorf("erro ao baixar Helmfile: %w", err)
 	}
 
 	// Tornar executável
-	if err := runCommand("chmod", "+x", "helmfile"); err != nil {
+	if err := utils.RunCommand("chmod", "+x", "helmfile"); err != nil {
 		return fmt.Errorf("erro ao tornar Helmfile executável: %w", err)
 	}
 
 	// Mover para PATH
-	if err := runCommand("sudo", "mv", "helmfile", "/usr/local/bin/"); err != nil {
+	if err := utils.RunCommand("sudo", "mv", "helmfile", "/usr/local/bin/"); err != nil {
 		return fmt.Errorf("erro ao instalar Helmfile: %w", err)
 	}
 
@@ -307,7 +307,7 @@ func installHelmfileMacOS() error {
 		return fmt.Errorf("Homebrew não está instalado. Instale primeiro: https://brew.sh")
 	}
 
-	if err := runCommand("brew", "install", "helmfile"); err != nil {
+	if err := utils.RunCommand("brew", "install", "helmfile"); err != nil {
 		return fmt.Errorf("erro ao instalar Helmfile: %w", err)
 	}
 
@@ -339,11 +339,11 @@ func installNetTools(osType utils.OSType) error {
 func installNetToolsUbuntu() error {
 	color.Blue("📦 Instalando net-tools no Ubuntu...")
 
-	if err := runCommand("sudo", "apt-get", "update"); err != nil {
+	if err := utils.RunCommand("sudo", "apt-get", "update"); err != nil {
 		return fmt.Errorf("erro ao atualizar repositórios: %w", err)
 	}
 
-	if err := runCommand("sudo", "apt-get", "install", "-y", "net-tools"); err != nil {
+	if err := utils.RunCommand("sudo", "apt-get", "install", "-y", "net-tools"); err != nil {
 		return fmt.Errorf("erro ao instalar net-tools: %w", err)
 	}
 
@@ -354,7 +354,7 @@ func installNetToolsUbuntu() error {
 func installNetToolsCentOS() error {
 	color.Blue("📦 Instalando net-tools no CentOS/RHEL...")
 
-	if err := runCommand("sudo", "yum", "install", "-y", "net-tools"); err != nil {
+	if err := utils.RunCommand("sudo", "yum", "install", "-y", "net-tools"); err != nil {
 		return fmt.Errorf("erro ao instalar net-tools: %w", err)
 	}
 
@@ -369,7 +369,7 @@ func installNetToolsMacOS() error {
 		return fmt.Errorf("Homebrew não está instalado. Instale primeiro: https://brew.sh")
 	}
 
-	if err := runCommand("brew", "install", "net-tools"); err != nil {
+	if err := utils.RunCommand("brew", "install", "net-tools"); err != nil {
 		return fmt.Errorf("erro ao instalar net-tools: %w", err)
 	}
 
@@ -402,7 +402,7 @@ func installK9sUbuntu() error {
 	color.Blue("📦 Instalando K9s no Ubuntu...")
 
 	// Baixar K9s
-	if err := runCommand("curl", "-sS", "https://webinstall.dev/k9s", "|", "bash"); err != nil {
+	if err := utils.RunCommand("curl", "-sS", "https://webinstall.dev/k9s", "|", "bash"); err != nil {
 		return fmt.Errorf("erro ao instalar K9s: %w", err)
 	}
 
@@ -414,7 +414,7 @@ func installK9sCentOS() error {
 	color.Blue("📦 Instalando K9s no CentOS/RHEL...")
 
 	// Baixar K9s
-	if err := runCommand("curl", "-sS", "https://webinstall.dev/k9s", "|", "bash"); err != nil {
+	if err := utils.RunCommand("curl", "-sS", "https://webinstall.dev/k9s", "|", "bash"); err != nil {
 		return fmt.Errorf("erro ao instalar K9s: %w", err)
 	}
 
@@ -429,7 +429,7 @@ func installK9sMacOS() error {
 		return fmt.Errorf("Homebrew não está instalado. Instale primeiro: https://brew.sh")
 	}
 
-	if err := runCommand("brew", "install", "k9s"); err != nil {
+	if err := utils.RunCommand("brew", "install", "k9s"); err != nil {
 		return fmt.Errorf("erro ao instalar K9s: %w", err)
 	}
 

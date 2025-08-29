@@ -2,18 +2,22 @@ run:
   timeout: 5m
   go: "1.25"
 
-linters:
-  enable:
-    - gofmt
-    - goimports
-    - govet
-    - errcheck
-    - staticcheck
-    - gosimple
-    - ineffassign
-    - unused
-    - misspell
-    - gosec
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+
+  linters:
+    enable:
+      - gofmt
+      - govet
+      - errcheck
+      - staticcheck
+      - gosimple
+      - ineffassign
+      - unused
+      - misspell
+      - gosec
 
 linters-settings:
   goimports:
@@ -24,3 +28,6 @@ issues:
     - path: _test\.go
       linters:
         - errcheck
+    - linters:
+        - misspell
+      text: "comando|operacional|argumentos|progresso"

@@ -37,7 +37,7 @@ Sistemas suportados: Ubuntu 20.04+, CentOS/RHEL 8+, macOS 12+`,
 
 		// Se não há argumentos, mostrar ajuda
 		if len(args) == 0 {
-			cmd.Help()
+			_ = cmd.Help()
 		}
 	},
 }
@@ -63,8 +63,8 @@ func init() {
 	rootCmd.PersistentFlags().Bool("version", false, "show version information")
 
 	// Bind flags to viper
-	viper.BindPFlag("verbose", rootCmd.PersistentFlags().Lookup("verbose"))
-	viper.BindPFlag("yes", rootCmd.PersistentFlags().Lookup("yes"))
+	_ = viper.BindPFlag("verbose", rootCmd.PersistentFlags().Lookup("verbose"))
+	_ = viper.BindPFlag("yes", rootCmd.PersistentFlags().Lookup("yes"))
 
 	// Configurar cores
 	color.NoColor = false

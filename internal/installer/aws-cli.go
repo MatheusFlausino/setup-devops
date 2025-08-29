@@ -33,32 +33,32 @@ func installAWSCLIUbuntu() error {
 	color.Blue("📦 Instalando AWS CLI no Ubuntu...")
 
 	// Baixar o instalador
-	if err := runCommand("curl", "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip", "-o", "awscliv2.zip"); err != nil {
+	if err := utils.RunCommand("curl", "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip", "-o", "awscliv2.zip"); err != nil {
 		return fmt.Errorf("erro ao baixar AWS CLI: %w", err)
 	}
 
 	// Instalar unzip se não estiver disponível
 	if !isCommandAvailable("unzip") {
-		if err := runCommand("sudo", "apt-get", "update"); err != nil {
+		if err := utils.RunCommand("sudo", "apt-get", "update"); err != nil {
 			return fmt.Errorf("erro ao atualizar repositórios: %w", err)
 		}
-		if err := runCommand("sudo", "apt-get", "install", "-y", "unzip"); err != nil {
+		if err := utils.RunCommand("sudo", "apt-get", "install", "-y", "unzip"); err != nil {
 			return fmt.Errorf("erro ao instalar unzip: %w", err)
 		}
 	}
 
 	// Extrair o instalador
-	if err := runCommand("unzip", "awscliv2.zip"); err != nil {
+	if err := utils.RunCommand("unzip", "awscliv2.zip"); err != nil {
 		return fmt.Errorf("erro ao extrair AWS CLI: %w", err)
 	}
 
 	// Instalar AWS CLI
-	if err := runCommand("sudo", "./aws/install"); err != nil {
+	if err := utils.RunCommand("sudo", "./aws/install"); err != nil {
 		return fmt.Errorf("erro ao instalar AWS CLI: %w", err)
 	}
 
 	// Limpar arquivos temporários
-	runCommand("rm", "-rf", "awscliv2.zip", "aws")
+	utils.RunCommandSilent("rm", "-rf", "awscliv2.zip", "aws")
 
 	color.Green("✅ AWS CLI instalado com sucesso no Ubuntu!")
 	return nil
@@ -69,29 +69,29 @@ func installAWSCLICentOS() error {
 	color.Blue("📦 Instalando AWS CLI no CentOS/RHEL...")
 
 	// Baixar o instalador
-	if err := runCommand("curl", "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip", "-o", "awscliv2.zip"); err != nil {
+	if err := utils.RunCommand("curl", "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip", "-o", "awscliv2.zip"); err != nil {
 		return fmt.Errorf("erro ao baixar AWS CLI: %w", err)
 	}
 
 	// Instalar unzip se não estiver disponível
 	if !isCommandAvailable("unzip") {
-		if err := runCommand("sudo", "yum", "install", "-y", "unzip"); err != nil {
+		if err := utils.RunCommand("sudo", "yum", "install", "-y", "unzip"); err != nil {
 			return fmt.Errorf("erro ao instalar unzip: %w", err)
 		}
 	}
 
 	// Extrair o instalador
-	if err := runCommand("unzip", "awscliv2.zip"); err != nil {
+	if err := utils.RunCommand("unzip", "awscliv2.zip"); err != nil {
 		return fmt.Errorf("erro ao extrair AWS CLI: %w", err)
 	}
 
 	// Instalar AWS CLI
-	if err := runCommand("sudo", "./aws/install"); err != nil {
+	if err := utils.RunCommand("sudo", "./aws/install"); err != nil {
 		return fmt.Errorf("erro ao instalar AWS CLI: %w", err)
 	}
 
 	// Limpar arquivos temporários
-	runCommand("rm", "-rf", "awscliv2.zip", "aws")
+	utils.RunCommandSilent("rm", "-rf", "awscliv2.zip", "aws")
 
 	color.Green("✅ AWS CLI instalado com sucesso no CentOS/RHEL!")
 	return nil
@@ -107,7 +107,7 @@ func installAWSCLIMacOS() error {
 	}
 
 	// Instalar AWS CLI via Homebrew
-	if err := runCommand("brew", "install", "awscli"); err != nil {
+	if err := utils.RunCommand("brew", "install", "awscli"); err != nil {
 		return fmt.Errorf("erro ao instalar AWS CLI: %w", err)
 	}
 
